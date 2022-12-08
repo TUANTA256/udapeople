@@ -347,22 +347,16 @@ jobs:
       - run:
           name: Get backend url & perform smoke test
           command: |
-            export BACKEND_IP=$(aws ec2 describe-instances \
-            --query "Reservations[*].Instances[*].[PublicIpAddress]" \
-            --filters "Name=tag:Name,Values=backend-${CIRCLE_WORKFLOW_ID:0:7}" \
-            --output text)
-            echo ${BACKEND_IP}
-            export BACKEND=$(echo $BACKEND_IP | grep -o '[^ ]*$')
-            echo $BACKEND
-            export API_URL="http://${BACKEND}:3030"
-            echo "API_URL=${API_URL}"
-            echo "Sleeping for 1 minute"
-            sleep 60
-            if curl -v "${API_URL}/api/status" | grep "ok"
+            export BACKEND_IP=$(tail -n 1 .circleci/ansible/inventory.txt)
+            echo BACKEND_IP
+            export API_URL="http://${BACKEND_IP}:3030"
+            echo "API_URL = ${API_URL}"
+            echo "${API_URL}"
+            if curl "${API_URL}/api/status" | grep "ok"
             then
-              return 0
+                return 0
             else
-              return 1
+                return 1
             fi
       # Here's where you will add some code to rollback on failure  
       - destroy-environment
