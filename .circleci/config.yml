@@ -321,8 +321,10 @@ jobs:
     steps:
       # Checkout code from git
       - checkout
-      - add_ssh_keys:
-          fingerprints: ["6d:c8:09:07:06:8c:74:5f:fd:9e:ac:e6:2c:dc:4c:29"]
+      - attach_workspace:
+          at: ~/
+      # - add_ssh_keys:
+      #     fingerprints: ["6d:c8:09:07:06:8c:74:5f:fd:9e:ac:e6:2c:dc:4c:29"]
       - run:
           name: Install dependencies
           command: |
